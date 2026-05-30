@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心理测评管理后台</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Toast 通知容器 -->
+  <div id="toast-container"></div>
+
+  <!-- 登录页面 -->
+  <div id="login-section" class="login-section">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <h1>心理测评管理系统</h1>
+        <p>请登录以继续管理</p>
+      </div>
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input type="text" id="username" name="username" placeholder="请输入用户名" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input type="password" id="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">登 录</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 管理后台主页面 -->
+  <div id="dashboard-section" class="dashboard-section" style="display: none;">
+
+    <!-- 顶部导航栏 -->
+    <header class="header">
+      <div class="header-left">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7C5CFC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <h1>心理测评管理</h1>
+      </div>
+      <div class="header-right">
+        <span class="admin-name" id="admin-name">管理员</span>
+        <button class="btn btn-secondary btn-sm" id="btn-logout">退出登录</button>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+
+      <!-- 操作栏 -->
+      <div class="action-bar">
+        <div class="action-bar-left">
+          <h2>测评列表</h2>
+          <span class="count-badge" id="assessment-count">0</span>
+        </div>
+        <div class="action-bar-right">
+          <button class="btn btn-secondary" id="btn-import">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            导入问卷
+          </button>
+          <button class="btn btn-primary" id="btn-create">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            新建测评
+          </button>
+        </div>
+      </div>
+
+      <!-- 测评列表表格 -->
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="table" id="assessment-table">
+            <thead>
+              <tr>
+                <th>标题</th>
+                <th>描述</th>
+                <th>题目数量</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="assessment-tbody">
+              <!-- 动态渲染 -->
+            </tbody>
+          </table>
+          <div class="empty-state" id="empty-state" style="display: none;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            <p>暂无测评数据</p>
+            <p class="empty-hint">点击「新建测评」或「导入问卷」开始使用</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分享链接区域 -->
+      <div class="share-section">
+        <div class="action-bar">
+          <div class="action-bar-left">
+            <h2>分享链接</h2>
+            <span class="count-badge" id="share-count">0</span>
+          </div>
+          <div class="action-bar-right">
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-share">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+              刷新
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="table" id="share-table">
+              <thead>
+                <tr>
+                  <th>测评名称</th>
+                  <th>分享链接</th>
+                  <th>状态</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="share-tbody">
+                <!-- 动态渲染 -->
+              </tbody>
+            </table>
+            <div class="empty-state" id="share-empty-state" style="display: none;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              <p>暂无分享链接</p>
+              <p class="empty-hint">在测评列表中点击「分享」按钮生成链接</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- 新建/编辑测评弹窗 -->
+  <div class="modal-overlay" id="modal-assessment">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-assessment-title">新建测评</h3>
+        <button class="modal-close" data-close="modal-assessment">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-assessment">
+          <input type="hidden" id="assessment-id">
+          <div class="form-group">
+            <label for="assessment-title">测评标题 <span class="required">*</span></label>
+            <input type="text" id="assessment-title" placeholder="请输入测评标题" required>
+          </div>
+          <div class="form-group">
+            <label for="assessment-subtitle">副标题（开屏页显示）</label>
+            <input type="text" id="assessment-subtitle" placeholder="如：你在为什么焦虑？">
+          </div>
+          <div class="form-group">
+            <label for="assessment-description">测评描述</label>
+            <textarea id="assessment-description" rows="3" placeholder="请输入测评描述"></textarea>
+          </div>
+          <div class="form-group">
+            <label>题目列表</label>
+            <div id="questions-container">
+              <!-- 动态添加题目 -->
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-question">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              添加题目
+            </button>
+          </div>
+          <div class="form-group">
+            <label>结果配置</label>
+            <div id="results-container">
+              <!-- 动态添加结果 -->
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-add-result">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              添加结果
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="modal-assessment">取消</button>
+        <button class="btn btn-primary" id="btn-save-assessment">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导入问卷弹窗 -->
+  <div class="modal-overlay" id="modal-import">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>导入问卷</h3>
+        <button class="modal-close" data-close="modal-import">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>粘贴 JSON 数据</label>
+          <textarea id="import-json" rows="16" placeholder='{
+  "title": "测评标题",
+  "description": "测评描述",
+  "questions": [
+    {
+      "text": "问题内容？",
+      "options": [
+        {"text": "选项A", "score": 1},
+        {"text": "选项B", "score": 2},
+        {"text": "选项C", "score": 3},
+        {"text": "选项D", "score": 4}
+      ]
+    }
+  ],
+  "results": [
+    {"title": "结果标题", "description": "结果描述", "minScore": 5, "maxScore": 9}
+  ]
+}'></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="modal-import">取消</button>
+        <button class="btn btn-primary" id="btn-confirm-import">导入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享链接弹窗 -->
+  <div class="modal-overlay" id="modal-share">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>生成分享链接</h3>
+        <button class="modal-close" data-close="modal-share">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="share-link-result" id="share-link-result" style="display: none;">
+          <div class="share-link-box">
+            <input type="text" id="share-link-url" readonly>
+            <button class="btn btn-primary btn-sm" id="btn-copy-share-link">复制链接</button>
+          </div>
+          <p class="share-link-hint">将此链接发送给被测者即可开始测评</p>
+        </div>
+        <div class="share-link-loading" id="share-link-loading">
+          <p>正在生成分享链接...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="modal-share">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 删除确认弹窗 -->
+  <div class="modal-overlay" id="modal-delete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3>确认删除</h3>
+        <button class="modal-close" data-close="modal-delete">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>确定要删除测评「<strong id="delete-assessment-name"></strong>」吗？此操作不可撤销。</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="modal-delete">取消</button>
+        <button class="btn btn-danger" id="btn-confirm-delete">删除</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
